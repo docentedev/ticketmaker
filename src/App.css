@@ -1,0 +1,401 @@
+body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            color: #333;
+          }
+
+          .app-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
+          }
+
+          .toolbar {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+          }
+
+          .toolbar button,
+          .toolbar input[type="file"]+label {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+
+          .toolbar button:hover,
+          .toolbar input[type="file"]+label:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+          }
+
+          .toolbar button:active,
+          .toolbar input[type="file"]+label:active {
+            transform: translateY(0);
+          }
+
+          .toolbar .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-start;
+          }
+
+          .toolbar .input-group label {
+            font-size: 13px;
+            color: #555;
+            font-weight: bold;
+          }
+
+          .toolbar .input-group input[type="number"],
+          .toolbar .input-group input[type="file"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 80px;
+            text-align: center;
+          }
+
+          .toolbar input[type="file"] {
+            display: none;
+            /* Ocultar el input de archivo real */
+          }
+
+          .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+          }
+
+          .ticket-canvas-container {
+            border: 2px dashed #ccc;
+            background-color: #ffffff;
+            position: relative;
+            overflow: visible; /* Cambiado de hidden a visible para permitir drag fuera del contenedor */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            flex-shrink: 0;
+            /* Evita que se encoja */
+          }
+
+          /* Estilos específicos para @dnd-kit */
+.ticket-element {
+  position: absolute;
+  cursor: grab;
+  padding: 5px;
+  box-sizing: border-box;
+  user-select: none;
+  z-index: 1;
+}
+
+.ticket-element:active {
+  cursor: grabbing;
+}
+
+.ticket-element.selected {
+  border: 2px solid #007bff;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+.ticket-element.capturing {
+  border: none !important;
+  z-index: 0;
+}
+
+          .ticket-element {
+            position: absolute;
+            cursor: grab;
+            padding: 5px;
+            /* Espacio para el borde de selección */
+            box-sizing: border-box;
+            user-select: none;
+            /* Evita la selección de texto al arrastrar */
+          }
+
+          .ticket-element.selected {
+            border: 2px solid #007bff;
+            border-radius: 6px;
+          }
+
+          .ticket-element.capturing {
+            border: none !important;
+            /* Ocultar borde durante la captura */
+          }
+
+          .text-element {
+            white-space: pre-wrap;
+            /* Mantiene saltos de línea */
+            word-break: break-word;
+            /* Rompe palabras largas */
+          }
+
+          .qr-element {
+            /* Tamaño dinámico controlado por React */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .element-tooltip {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+          }
+
+          .element-tooltip h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+          }
+
+          .element-tooltip .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+          }
+
+          .element-tooltip .input-group label {
+            font-size: 13px;
+            color: #555;
+            font-weight: bold;
+          }
+
+          .element-tooltip .input-group input[type="text"],
+          .element-tooltip .input-group input[type="color"],
+          .element-tooltip .input-group textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: calc(100% - 16px);
+          }
+
+          .element-tooltip textarea {
+            resize: vertical;
+            min-height: 60px;
+          }
+
+          .element-tooltip .font-size-controls,
+          .element-tooltip .style-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+          }
+
+          .element-tooltip .font-size-controls button,
+          .element-tooltip .style-controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+          }
+
+          .element-tooltip .font-size-controls button:hover,
+          .element-tooltip .style-controls button:hover {
+            background-color: #0056b3;
+          }
+
+          .element-tooltip .style-controls button.active {
+            background-color: #28a745;
+          }
+
+          .element-tooltip .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+          }
+
+          .element-tooltip .delete-button:hover {
+            background-color: #c82333;
+          }
+
+          .no-element-selected {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+          }
+
+          /* Estilos para el control deslizante de tamaño */
+          .size-slider {
+            width: 100%;
+            margin-top: 8px;
+            height: 5px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+          }
+
+          .size-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+          }
+
+          .size-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+            border: none;
+          }
+
+          /* Estilos para el selector de nivel de QR */
+          .element-tooltip select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+            width: 100%;
+          }
+
+          .element-tooltip select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+          }
+
+          /* Estilos específicos para botones de guardar y cargar */
+          .save-button {
+            background-color: #28a745 !important;
+          }
+
+          .save-button:hover {
+            background-color: #218838 !important;
+          }
+
+          .save-load-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+          }
+
+          .save-load-section .input-group {
+            margin: 0;
+          }
+
+          /* Estilos específicos para elementos de imagen */
+          .image-element {
+            border: 2px dashed transparent;
+            transition: border 0.2s ease;
+          }
+
+          .image-element.selected {
+            border: 2px dashed #007bff;
+          }
+
+          .image-element img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+          }
+
+          /* Estilos para controles de imagen en el tooltip */
+          .opacity-slider,
+          .rotation-slider {
+            width: 100%;
+            margin: 5px 0;
+          }
+
+          .opacity-slider {
+            background: linear-gradient(to right, 
+              rgba(255,255,255,0) 0%, 
+              rgba(0,123,255,1) 100%);
+            height: 6px;
+          }
+
+          .rotation-slider {
+            background: linear-gradient(to right, 
+              #ff6b6b 0%, 
+              #4ecdc4 25%, 
+              #45b7d1 50%, 
+              #96ceb4 75%, 
+              #ffeaa7 100%);
+            height: 6px;
+          }
+
+          /* Mejorar los controles de tamaño para imágenes */
+          .element-tooltip .input-group label {
+            font-weight: 600;
+            color: #495057;
+          }
+
+          @media (max-width: 768px) {
+
+            .toolbar,
+            .main-content {
+              flex-direction: column;
+              align-items: center;
+            }
+
+            .toolbar .input-group {
+              width: 100%;
+              align-items: center;
+            }
+
+            .toolbar .input-group input {
+              width: 100px;
+            }
+
+            .element-tooltip {
+              width: 90%;
+            }
+          }
