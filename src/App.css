@@ -96,12 +96,10 @@ body {
           }
 
           .ticket-canvas-container {
-            border: 2px dashed #ccc;
             background-color: #ffffff;
             position: relative;
             overflow: visible; /* Cambiado de hidden a visible para permitir drag fuera del contenedor */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
             flex-shrink: 0;
             /* Evita que se encoja */
           }
@@ -309,6 +307,17 @@ body {
             box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
           }
 
+          /* Estilos específicos para el selector de tipografía */
+          .element-tooltip .font-family-select {
+            font-family: inherit;
+            min-width: 150px;
+          }
+
+          .element-tooltip .font-family-select option {
+            font-family: inherit;
+            padding: 5px;
+          }
+
           /* Estilos específicos para botones de guardar y cargar */
           .save-button {
             background-color: #28a745 !important;
@@ -316,6 +325,14 @@ body {
 
           .save-button:hover {
             background-color: #218838 !important;
+          }
+
+          .batch-button {
+            background-color: #007bff !important;
+          }
+
+          .batch-button:hover {
+            background-color: #0056b3 !important;
           }
 
           .save-load-section {
@@ -378,24 +395,400 @@ body {
             color: #495057;
           }
 
-          @media (max-width: 768px) {
-
-            .toolbar,
-            .main-content {
-              flex-direction: column;
-              align-items: center;
-            }
-
-            .toolbar .input-group {
-              width: 100%;
-              align-items: center;
-            }
-
-            .toolbar .input-group input {
-              width: 100px;
-            }
-
-            .element-tooltip {
-              width: 90%;
-            }
+          /* Estilos para el procesador en lote */
+          .batch-processor-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
           }
+
+          .batch-processor-modal {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+          }
+
+          .batch-processor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+          }
+
+          .batch-processor-header h2 {
+            margin: 0;
+            color: #333;
+          }
+
+          .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+          }
+
+          .close-button:hover {
+            color: #dc3545;
+          }
+
+          .batch-processor-content {
+            padding: 20px;
+          }
+
+          .variables-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+          }
+
+          .variables-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+          }
+
+          .variable-tag {
+            background-color: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+          }
+
+          .variables-help {
+            font-size: 14px;
+            color: #6c757d;
+            margin: 10px 0 0 0;
+          }
+
+          .csv-upload-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            text-align: center;
+          }
+
+          .csv-upload-button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+          }
+
+          .csv-upload-button:hover {
+            background-color: #218838;
+          }
+
+          .csv-info {
+            margin-top: 15px;
+            text-align: left;
+          }
+
+          .csv-info p {
+            margin: 5px 0;
+            padding: 5px 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+          }
+
+          .errors-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8d7da;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+          }
+
+          .error-item {
+            color: #721c24;
+            margin: 5px 0;
+          }
+
+          .progress-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #d1ecf1;
+            border-radius: 8px;
+            border-left: 4px solid #17a2b8;
+          }
+
+          .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+          }
+
+          .progress-fill {
+            height: 100%;
+            background-color: #17a2b8;
+            transition: width 0.3s ease;
+          }
+
+          .batch-actions {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+          }
+
+          .process-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+          }
+
+          .process-button:hover:not(:disabled) {
+            background-color: #0056b3;
+          }
+
+          .process-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+          }
+
+          /* Estilos para el componente Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-icon {
+  font-size: 20px;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.modal-close-button:hover {
+  background-color: #f1f3f4;
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  padding: 16px 24px 20px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-ok-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-ok-button:hover {
+  background-color: #0056b3;
+}
+
+/* Variantes de modal por tipo */
+.modal-success .modal-header {
+  border-bottom-color: #d4edda;
+}
+
+.modal-success .modal-title {
+  color: #155724;
+}
+
+.modal-success .modal-ok-button {
+  background-color: #28a745;
+}
+
+.modal-success .modal-ok-button:hover {
+  background-color: #218838;
+}
+
+.modal-error .modal-header {
+  border-bottom-color: #f8d7da;
+}
+
+.modal-error .modal-title {
+  color: #721c24;
+}
+
+.modal-error .modal-ok-button {
+  background-color: #dc3545;
+}
+
+.modal-error .modal-ok-button:hover {
+  background-color: #c82333;
+}
+
+.modal-warning .modal-header {
+  border-bottom-color: #ffeaa7;
+}
+
+.modal-warning .modal-title {
+  color: #856404;
+}
+
+.modal-warning .modal-ok-button {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.modal-warning .modal-ok-button:hover {
+  background-color: #e0a800;
+}
+
+/* Componentes específicos del modal */
+.modal-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+}
+
+.modal-summary-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.modal-summary-value {
+  font-weight: 600;
+  color: #212529;
+}
+
+.modal-error-list {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.modal-error-list ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.modal-error-list li {
+  color: #721c24;
+  margin-bottom: 8px;
+}
+
+.modal-error-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

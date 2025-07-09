@@ -10,6 +10,7 @@ export interface TextElement {
   fontSize: number;
   fontWeight: 'normal' | 'bold';
   fontStyle: 'normal' | 'italic';
+  fontFamily: string;
 }
 
 export interface QRElement {
@@ -41,4 +42,29 @@ export interface TicketConfig {
   ticketWidth: number;
   ticketHeight: number;
   ticketBackground: string;
+}
+
+// Tipos para el sistema de plantillas y generación en lote
+export interface CSVRow {
+  [key: string]: string | boolean;
+  done: boolean; // Indica si ya se procesó
+}
+
+export interface TemplateVariable {
+  name: string; // Nombre de la variable sin {{}}
+  defaultValue?: string;
+}
+
+export interface BatchJobConfig {
+  template: TicketConfig; // Configuración base del ticket
+  csvData: CSVRow[]; // Datos del CSV
+  variables: TemplateVariable[]; // Variables encontradas en el template
+  outputFormat: 'png' | 'json'; // Formato de salida
+}
+
+export interface BatchJobResult {
+  processed: number;
+  skipped: number;
+  errors: string[];
+  downloadUrls: string[];
 }

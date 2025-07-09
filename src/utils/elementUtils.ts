@@ -12,6 +12,7 @@ export const createTextElement = (): TextElement => {
     fontSize: 16, // Tamaño de fuente predeterminado
     fontWeight: 'normal', // Estilo de fuente predeterminado
     fontStyle: 'normal', // Estilo de fuente predeterminado
+    fontFamily: 'Arial', // Fuente predeterminada
   };
 };
 

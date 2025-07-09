@@ -25,6 +25,7 @@ const TextElement: React.FC<ElementProps> = ({ element, isSelected, isCapturing,
     fontSize: `${textElement.fontSize}px`,
     fontWeight: textElement.fontWeight,
     fontStyle: textElement.fontStyle,
+    fontFamily: textElement.fontFamily,
   };
 
   return (

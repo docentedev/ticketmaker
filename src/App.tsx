@@ -10,6 +10,11 @@ import type { TicketElement, TicketConfig } from './types';
 import Toolbar from './components/Toolbar';
 import TicketCanvas from './components/TicketCanvas';
 import ElementTooltip from './components/ElementTooltip';
+import BatchProcessor from './components/BatchProcessor';
+import Modal from './components/Modal';
+
+// Import custom hooks
+import { useModal } from './hooks/useModal';
 
 // Import utilities
 import { saveCanvasConfig, loadCanvasConfig } from './utils/canvasManager';
@@ -17,18 +22,17 @@ import { createTextElement, createQRElement, createImageElement } from './utils/
 
 // Componente principal de la aplicación
 function App() {
-  // Estado para almacenar todos los elementos del ticket (texto y QR)
+  // Estados del ticket
   const [elements, setElements] = useState<TicketElement[]>([]);
-  // Estado para el ID del elemento actualmente seleccionado para edición
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
-  // Estado para el ancho del ticket
   const [ticketWidth, setTicketWidth] = useState<number>(400);
-  // Estado para el alto del ticket
   const [ticketHeight, setTicketHeight] = useState<number>(200);
-  // Estado para la URL de la imagen de fondo del ticket
   const [ticketBackground, setTicketBackground] = useState<string>('');
-  // Estado para controlar si se está capturando la imagen (para ocultar bordes)
   const [isCapturing, setIsCapturing] = useState<boolean>(false);
+  const [isBatchProcessorOpen, setIsBatchProcessorOpen] = useState<boolean>(false);
+  
+  // Hook para manejar modales
+  const { modal, showModal, closeModal } = useModal();
 
   // Referencia al contenedor del ticket para html2canvas
   const ticketRef = useRef<HTMLDivElement>(null);
@@ -106,8 +110,13 @@ function App() {
 
   // Función para seleccionar un elemento al hacer doble clic
   const handleSelectElement = useCallback((id: string) => {
-    setSelectedElementId(id);
-  }, []);
+    // Si el elemento ya está seleccionado, deseleccionarlo
+    if (selectedElementId === id) {
+      setSelectedElementId(null);
+    } else {
+      setSelectedElementId(id);
+    }
+  }, [selectedElementId]);
 
   // Función para actualizar las propiedades de un elemento
   const handleUpdateElement = useCallback((id: string, newProps: Partial<TicketElement>) => {
@@ -202,7 +211,11 @@ function App() {
           document.body.removeChild(link);
         } catch (error) {
           console.error("Error al generar la imagen del ticket:", error);
-          alert("Error al generar la imagen. Asegúrate de que la imagen de fondo no tenga restricciones CORS.");
+          showModal(
+            'Error al generar imagen',
+            'No se pudo generar la imagen del ticket. Asegúrate de que la imagen de fondo no tenga restricciones CORS.',
+            'error'
+          );
         } finally {
           setIsCapturing(false); // Restaurar bordes de selección
         }
@@ -228,7 +241,11 @@ function App() {
 
     // Verificar que sea un archivo JSON
     if (!file.name.toLowerCase().endsWith('.json')) {
-      alert('Por favor, selecciona un archivo JSON válido.');
+      showModal(
+        'Archivo inválido',
+        'Por favor, selecciona un archivo JSON válido.',
+        'warning'
+      );
       event.target.value = '';
       return;
     }
@@ -242,15 +259,41 @@ function App() {
         setTicketBackground(config.ticketBackground || '');
         setSelectedElementId(null);
         
-        alert(`✅ Configuración cargada exitosamente!\n📊 Elementos: ${config.elements.length}\n📐 Dimensiones: ${config.ticketWidth}x${config.ticketHeight}px`);
+        showModal(
+          'Configuración cargada',
+          <div className="modal-summary">
+            <div className="modal-summary-item">
+              <span className="modal-summary-label">📊 Elementos:</span>
+              <span className="modal-summary-value">{config.elements.length}</span>
+            </div>
+            <div className="modal-summary-item">
+              <span className="modal-summary-label">📐 Dimensiones:</span>
+              <span className="modal-summary-value">{config.ticketWidth}x{config.ticketHeight}px</span>
+            </div>
+          </div>,
+          'success'
+        );
       },
       (error: string) => {
-        alert(`❌ Error al cargar el archivo:\n${error}\n\nAsegúrate de que sea un archivo de configuración válido.`);
+        showModal(
+          'Error al cargar archivo',
+          <div>
+            <p>{error}</p>
+            <p>Asegúrate de que sea un archivo de configuración válido.</p>
+          </div>,
+          'error'
+        );
       }
     );
     
     // Limpiar el input para permitir cargar el mismo archivo nuevamente
     event.target.value = '';
+  };
+
+  // Función para manejar el procesamiento en lote
+  const handleBatchProcess = () => {
+    // Abrir el modal del procesador en lote
+    setIsBatchProcessorOpen(true);
   };
 
   // Obtener el elemento seleccionado para pasarlo al ElementTooltip
@@ -271,6 +314,7 @@ function App() {
         onDownloadTicket={handleDownloadTicket}
         onSaveCanvas={handleSaveCanvas}
         onLoadCanvas={handleLoadCanvas}
+        onBatchProcess={handleBatchProcess}
       />
 
       {/* Contenido principal: Canvas del ticket y panel de edición */}
@@ -295,6 +339,29 @@ function App() {
           onDeleteElement={handleDeleteElement}
         />
       </div>
+
+      {/* Procesador en lote */}
+      <BatchProcessor
+        template={{
+          elements,
+          ticketWidth,
+          ticketHeight,
+          ticketBackground,
+        }}
+        isOpen={isBatchProcessorOpen}
+        onClose={() => setIsBatchProcessorOpen(false)}
+        onShowModal={showModal}
+      />
+
+      {/* Modal para mensajes */}
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        title={modal.title}
+        type={modal.type}
+      >
+        {modal.content}
+      </Modal>
     </div>
   );
 }

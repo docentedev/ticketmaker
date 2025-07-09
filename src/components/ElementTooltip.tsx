@@ -65,6 +65,12 @@ const ElementTooltip: React.FC<ElementTooltipProps> = ({ selectedElement, onUpda
     }
   };
 
+  const handleFontFamilyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (selectedElement.type === 'text') {
+      onUpdateElement(selectedElement.id, { fontFamily: e.target.value });
+    }
+  };
+
   // Funciones para manejar elementos de imagen
   const handleImageSizeChange = (property: 'width' | 'height', delta: number) => {
     if (selectedElement.type === 'image') {
@@ -149,6 +155,28 @@ const ElementTooltip: React.FC<ElementTooltipProps> = ({ selectedElement, onUpda
                 Cursiva
               </button>
             </div>
+          </div>
+          <div className="input-group">
+            <label htmlFor="font-family">Tipografía:</label>
+            <select
+              id="font-family"
+              value={(selectedElement as TextElement).fontFamily}
+              onChange={handleFontFamilyChange}
+              className="font-family-select"
+            >
+              <option value="Arial">Arial</option>
+              <option value="Helvetica">Helvetica</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Georgia">Georgia</option>
+              <option value="Verdana">Verdana</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Impact">Impact</option>
+              <option value="Comic Sans MS">Comic Sans MS</option>
+              <option value="Trebuchet MS">Trebuchet MS</option>
+              <option value="Tahoma">Tahoma</option>
+              <option value="Palatino">Palatino</option>
+              <option value="Garamond">Garamond</option>
+            </select>
           </div>
         </>
       )}

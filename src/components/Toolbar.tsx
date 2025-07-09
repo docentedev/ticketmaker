@@ -13,6 +13,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onDownloadTicket,
   onSaveCanvas,
   onLoadCanvas,
+  onBatchProcess,
 }) => {
   return (
     <div className="toolbar">
@@ -67,6 +68,10 @@ const Toolbar: React.FC<ToolbarProps> = ({
             📁 Cargar Canvas
           </label>
         </div>
+
+        <button onClick={onBatchProcess} className="batch-button" title="Procesar lote desde archivo CSV">
+          🚀 Lote CSV
+        </button>
       </div>
       
       <button onClick={onDownloadTicket}>📥 Descargar Ticket</button>

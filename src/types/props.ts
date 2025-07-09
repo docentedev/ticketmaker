@@ -14,6 +14,7 @@ export interface ToolbarProps {
   onDownloadTicket: () => Promise<void>;
   onSaveCanvas: () => void;
   onLoadCanvas: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBatchProcess: () => void;
 }
 
 export interface TicketCanvasProps {
