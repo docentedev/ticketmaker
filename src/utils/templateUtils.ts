@@ -108,10 +108,33 @@ export const validateCSVData = (csvData: CSVRow[], variables: TemplateVariable[]
 };
 
 // Función para generar nombre de archivo único
-export const generateFileName = (prefix: string, rowIndex: number, data: CSVRow): string => {
+export const generateFileName = (prefix: string, rowIndex: number, data: CSVRow, filenameTemplate?: string): string => {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const identifier = data.nombre || data.id || data.email || `row-${rowIndex}`;
-  return `${prefix}-${identifier}-${timestamp}`;
+  
+  // Si se proporciona un template para el nombre, usarlo
+  if (filenameTemplate) {
+    const processedFilename = replaceTemplateVariables(filenameTemplate, data);
+    // Limpiar caracteres no válidos para nombres de archivo
+    const cleanFilename = processedFilename
+      .replace(/[<>:"/\\|?*]/g, '-')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+    return `${prefix}-${cleanFilename}-${timestamp}`;
+  }
+  
+  // Fallback al comportamiento original
+  const identifier = (typeof data.Nombre === 'string' ? data.Nombre : '') || 
+                    (typeof data.nombre === 'string' ? data.nombre : '') || 
+                    (typeof data.id === 'string' ? data.id : '') || 
+                    (typeof data.email === 'string' ? data.email : '') || 
+                    `row-${rowIndex}`;
+  const cleanIdentifier = identifier
+    .replace(/[<>:"/\\|?*]/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+  return `${prefix}-${cleanIdentifier}-${timestamp}`;
 };
 
 // Función para crear y descargar un archivo
@@ -153,4 +176,25 @@ export const updateCSVDoneStatus = (csvData: CSVRow[], processedIndices: number[
   ];
   
   return csvLines.join('\n');
+};
+
+// Función para validar template de nombre de archivo
+export const validateFilenameTemplate = (filenameTemplate: string, csvData: CSVRow[]): string[] => {
+  const errors: string[] = [];
+  const variables = findTemplateVariables(filenameTemplate);
+  const csvHeaders = csvData.length > 0 ? Object.keys(csvData[0]) : [];
+  
+  // Verificar que todas las variables del template están en el CSV
+  variables.forEach(variable => {
+    if (!csvHeaders.includes(variable)) {
+      errors.push(`La variable "${variable}" en el template del nombre no se encontró en el CSV`);
+    }
+  });
+  
+  // Verificar que el template no esté vacío
+  if (filenameTemplate.trim() === '') {
+    errors.push('El template del nombre de archivo no puede estar vacío');
+  }
+  
+  return errors;
 };

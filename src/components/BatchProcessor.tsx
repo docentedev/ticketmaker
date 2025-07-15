@@ -5,6 +5,7 @@ import {
   parseCSV,
   findAllVariablesInConfig,
   validateCSVData,
+  validateFilenameTemplate,
   createTicketFromTemplate,
   generateFileName,
   downloadFile,
@@ -21,6 +22,8 @@ interface BatchProcessorProps {
 const BatchProcessor: React.FC<BatchProcessorProps> = ({ template, isOpen, onClose, onShowModal }) => {
   const [csvData, setCsvData] = useState<CSVRow[]>([]);
   const [variables, setVariables] = useState<TemplateVariable[]>([]);
+  const [filenameTemplate, setFilenameTemplate] = useState<string>('ticket-{{Nombre}}');
+  const [useFilenameTemplate, setUseFilenameTemplate] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [errors, setErrors] = useState<string[]>([]);
@@ -44,6 +47,12 @@ const BatchProcessor: React.FC<BatchProcessorProps> = ({ template, isOpen, onClo
         const parsedData = parseCSV(csvText);
         const foundVariables = findAllVariablesInConfig(template);
         const validationErrors = validateCSVData(parsedData, foundVariables);
+
+        // Validar template de nombre de archivo si está habilitado
+        if (useFilenameTemplate) {
+          const filenameErrors = validateFilenameTemplate(filenameTemplate, parsedData);
+          validationErrors.push(...filenameErrors);
+        }
 
         if (validationErrors.length > 0) {
           setErrors(validationErrors);
@@ -289,7 +298,12 @@ const BatchProcessor: React.FC<BatchProcessorProps> = ({ template, isOpen, onClo
           // Convertir canvas a blob y descargar
           canvas.toBlob((blob) => {
             if (blob) {
-              const filename = generateFileName('ticket', index, data) + '.png';
+              const filename = generateFileName(
+                'ticket', 
+                index, 
+                data, 
+                useFilenameTemplate ? filenameTemplate : undefined
+              ) + '.png';
               downloadFile(blob, filename, 'image/png');
               resolve();
             } else {
@@ -326,6 +340,56 @@ const BatchProcessor: React.FC<BatchProcessorProps> = ({ template, isOpen, onClo
               </p>
             </div>
           )}
+
+          {/* Configuración de nombre de archivo */}
+          <div className="filename-template-section">
+            <h3>🏷️ Nombre de archivos</h3>
+            <div className="filename-options">
+              <label className="filename-option">
+                <input
+                  type="radio"
+                  name="filenameMode"
+                  checked={!useFilenameTemplate}
+                  onChange={() => setUseFilenameTemplate(false)}
+                />
+                <span>Usar nombre automático (ticket-Nombre-timestamp)</span>
+              </label>
+              <label className="filename-option">
+                <input
+                  type="radio"
+                  name="filenameMode"
+                  checked={useFilenameTemplate}
+                  onChange={() => setUseFilenameTemplate(true)}
+                />
+                <span>Usar template personalizado</span>
+              </label>
+            </div>
+            
+            {useFilenameTemplate && (
+              <div className="filename-template-config">
+                <div className="template-input-section">
+                  <label htmlFor="filename-template">Template del nombre:</label>
+                  <input
+                    type="text"
+                    id="filename-template"
+                    value={filenameTemplate}
+                    onChange={(e) => setFilenameTemplate(e.target.value)}
+                    placeholder="Ejemplo: ticket-{{Nombre}}-{{Codigo}}"
+                    className="filename-template-input"
+                  />
+                </div>
+                <div className="template-help">
+                  <p>💡 Usa variables del CSV entre llaves dobles: {'{{'} variable {'}'}</p>
+                  <p>📋 Variables disponibles: {variables.map(v => `{{${v.name}}}`).join(', ')}</p>
+                  {filenameTemplate && (
+                    <p className="template-preview">
+                      🔍 Vista previa: <code>{filenameTemplate.replace(/\{\{([^}]+)\}\}/g, '$1')}</code>
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Upload CSV */}
           <div className="csv-upload-section">
